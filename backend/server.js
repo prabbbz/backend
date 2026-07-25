@@ -1,50 +1,40 @@
 // ============================================================
-//  NPC AI Voice Chat - Backend Server
-//  Fungsi: Terima pesan (hasil STT) dari Roblox -> tanya ke AI
-//          (Groq, gratis) -> kembalikan teks balasan NPC.
-//  Suara (TTS) dan mic (STT) diproses NATIVE di Roblox,
-//  server ini HANYA mengurus "otak" NPC.
+//  NPC AI Voice Chat - Backend (versi Vercel, GRATIS, TANPA KARTU)
+//  File ini otomatis jadi endpoint: https://nama-project-kamu.vercel.app/api/npc-chat
 // ============================================================
 
-const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
-
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-const PORT = process.env.PORT || 3000;
-const GROQ_API_KEY = process.env.GROQ_API_KEY;
-const SHARED_SECRET = process.env.SHARED_SECRET || 'prabbbz';
-
-// Simpan riwayat percakapan per-player per-NPC di memori (sederhana).
-// key: `${userId}_${npcId}` -> array pesan
+// Memori percakapan sederhana. Catatan: karena ini serverless,
+// memori bisa "reset" kalau server lama tidak aktif (cold start).
+// Untuk NPC obrolan santai ini biasanya tidak masalah.
 const conversationMemory = new Map();
-const MAX_HISTORY = 6; // jumlah pesan terakhir yang diingat (biar hemat & cepat)
+const MAX_HISTORY = 6;
 
 function getHistoryKey(userId, npcId) {
   return `${userId}_${npcId}`;
 }
 
-// Middleware sederhana buat cek "kunci rahasia" dari Roblox,
-// supaya orang lain di internet gak bisa sembarangan pakai server ini.
-function checkSecret(req, res, next) {
+module.exports = async (req, res) => {
+  // Izinkan request dari Roblox
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-shared-secret');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const SHARED_SECRET = process.env.SHARED_SECRET || 'prabbbz';
   const secret = req.headers['x-shared-secret'];
   if (secret !== SHARED_SECRET) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
-  next();
-}
 
-app.get('/', (req, res) => {
-  res.send('NPC AI Voice Chat backend is running.');
-});
-
-// Endpoint utama yang dipanggil dari Roblox (server script)
-app.post('/npc-chat', checkSecret, async (req, res) => {
   try {
-    const { userId, npcId, npcPersona, playerMessage } = req.body;
+    const { userId, npcId, npcPersona, playerMessage } = req.body || {};
 
     if (!playerMessage || !npcId) {
       return res.status(400).json({ error: 'playerMessage dan npcId wajib diisi' });
@@ -68,7 +58,7 @@ app.post('/npc-chat', checkSecret, async (req, res) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${GROQ_API_KEY}`,
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
       },
       body: JSON.stringify({
         model: 'llama-3.3-70b-versatile',
@@ -87,26 +77,14 @@ app.post('/npc-chat', checkSecret, async (req, res) => {
     const data = await groqResponse.json();
     const reply = data.choices?.[0]?.message?.content?.trim() || 'Maaf, aku tidak mengerti.';
 
-    // Update memori percakapan
     history.push({ role: 'user', content: playerMessage });
     history.push({ role: 'assistant', content: reply });
     while (history.length > MAX_HISTORY) history.shift();
     conversationMemory.set(key, history);
 
-    res.json({ reply });
+    return res.status(200).json({ reply });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Server error', detail: err.message });
+    return res.status(500).json({ error: 'Server error', detail: err.message });
   }
-});
-
-// Reset memori percakapan (opsional, dipanggil kalau player pergi dari NPC)
-app.post('/npc-chat/reset', checkSecret, (req, res) => {
-  const { userId, npcId } = req.body;
-  conversationMemory.delete(getHistoryKey(userId || 'anon', npcId));
-  res.json({ ok: true });
-});
-
-app.listen(PORT, () => {
-  console.log(`NPC AI backend jalan di port ${PORT}`);
-});
+};
