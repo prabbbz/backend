@@ -1,0 +1,10 @@
+CARA MENGHASILKAN APK
+
+1. Upload seluruh folder project ini ke GitHub.
+2. Buka repository GitHub > tab Actions.
+3. Pilih workflow "Build PRABU Remote APK".
+4. Klik Run workflow.
+5. Setelah selesai, buka hasil workflow > Artifacts > PRABU-Remote-v0.1-debug-apk.
+6. Di dalam artifact ada app-debug.apk yang bisa dipasang ke Android.
+
+Workflow memakai AGP 9.3.0 + Gradle 9.5.0 + JDK 17 + Android SDK 36.

@@ -1,0 +1,21 @@
+PRABU REMOTE — AUTO ENROLL CONFIG
+
+Tidak ada pairing device di aplikasi.
+Setelah APK pertama kali dibuka:
+1) APK membuat Device UUID lokal.
+2) APK otomatis POST ke /api/devices/register.
+3) Server membuat/menyimpan device token unik.
+4) APK mulai heartbeat + command bridge.
+5) Device otomatis muncul di dashboard web.
+
+Sebelum build APK, buka:
+android/app/src/main/java/com/prabu/remote/AppConfig.kt
+
+Isi:
+SERVER_URL = URL deployment Vercel kamu, tanpa slash di akhir.
+INSTALL_KEY = nilai acak panjang yang SAMA dengan env INSTALL_KEY di Vercel.
+
+Penting:
+- INSTALL_KEY tertanam di APK sebagai bootstrap secret. Jangan publikasikan source/secret ini.
+- Device token berbeda untuk setiap instalasi.
+- Notification Access dan Accessibility tetap harus diaktifkan oleh pengguna Android karena Android tidak mengizinkan aplikasi memberikan izin sensitif itu secara diam-diam.

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#08090B">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="22dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="PRABU REMOTE"
+            android:textColor="#F4F5F7"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Automatic Android bridge"
+            android:textColor="#8F96A3" />
+
+        <TextView
+            android:id="@+id/identity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Device ID: membuat ID…"
+            android:textColor="#C6CBD4"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Status: menghubungkan ke server…"
+            android:textColor="#F4F5F7"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:text="Tidak ada pairing. Setelah aplikasi pertama kali dibuka, instalasi ini otomatis membuat Device ID, mendaftarkan dirinya ke server, lalu menjaga koneksi dashboard."
+            android:textColor="#8F96A3"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/notificationAccess"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="BUKA NOTIFICATION ACCESS" />
+
+        <Button
+            android:id="@+id/accessibilityAccess"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="BUKA ACCESSIBILITY" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="26dp"
+            android:text="v0.1 AUTO-ENROLL · Home / Back / Recents + Notifications"
+            android:textColor="#4B5260" />
+    </LinearLayout>
+</ScrollView>
